@@ -273,10 +273,10 @@ namespace Elf_s_World
                             else
                                 n.type = (int)Map.NPC.Types.TRAINER;
                         }
-                        bR.ReadByte();
-                        bR.ReadByte();
-                        bR.ReadByte();
-                        bR.ReadByte();
+                        n.u1 = bR.ReadByte();
+                        n.u2 = bR.ReadByte();
+                        n.u3 = bR.ReadByte();
+                        n.u4 = bR.ReadByte();
                         maps[i].objData.NPCs.Add(n);
                     }
 
@@ -438,12 +438,16 @@ namespace Elf_s_World
                 SpriteSetsOW.sets.Add(s);
             }
             */
-            /*int totalsprites = 72;
+            int totalsprites = 72;
             if(gameid == 3)
             {
                 totalsprites = 82;
             }
-            
+            if (gameid == 4)
+                totalsprites = 0x5B;
+
+            bR.BaseStream.Seek(Offsets.mapSpriteSetPointer, SeekOrigin.Begin);
+
             //load the sprite headers
             for(int i = 0; i < totalsprites; i++)//72 sprites in most - 82 in yellow/pikachu
             {
@@ -460,7 +464,7 @@ namespace Elf_s_World
                 SpriteSetsOW.SpriteData s = SpriteSetsOW.spritedatas[i];
                 s.data = bR.ReadBytes(SpriteSetsOW.spritedatas[i].size);
                 SpriteSetsOW.spritedatas[i] = s;
-            }*/
+            }
             /*
             //load up the hidden items
             bR.BaseStream.Seek(Offsets.hiddenItemPointer, SeekOrigin.Begin);
@@ -771,7 +775,8 @@ namespace Elf_s_World
                     }
                     else //generic npc*/
                     {
-                        detailsLabel.Text = "generic NPC, todo";
+                        detailsLabel.Text = maps[curMap].objData.NPCs[i].mov1.ToString();
+                        detailsLabel.Text += "\n" + maps[curMap].objData.NPCs[i].u2.ToString();
                     }
                     break;
                 }

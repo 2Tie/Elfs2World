@@ -149,6 +149,7 @@ namespace Elf_s_World
             public byte textID;
             public byte NPCID;
             public byte levelroster;
+            public byte u1, u2, u3, u4;
         }
 
         public Header header;
@@ -207,7 +208,7 @@ namespace Elf_s_World
                 }*/
                 g.DrawImageUnscaled(tileset.blocks[mapdata[i]], (i%header.width)*32, (int)(i/header.width)*32);
             }
-            /*
+            
             //draw the NPCs
             if(spriteSet != -1 && spriteSet < 0xf0)
             {
@@ -219,8 +220,8 @@ namespace Elf_s_World
                 {
                     int cel = Array.IndexOf(SpriteSetsOW.sets[spriteSet-1].indexes, objData.NPCs[i].pic);
                     Bitmap img;
-                    int dir = objData.NPCs[i].mov2 & 0x3;
-                    if (objData.NPCs[i].mov2 == 0xff)
+                    int dir = objData.NPCs[i].u2 & 0x3;
+                    if (objData.NPCs[i].u2 == 0xff)
                         dir = 0;
                     if (dir < 3)
                         img = new Bitmap(SpriteSetsOW.sets[spriteSet - 1].sprites[cel].frames[dir]);
@@ -251,8 +252,8 @@ namespace Elf_s_World
                 {
                     int cel = Array.IndexOf(SpriteSetsOW.interiorSet.indexes, objData.NPCs[i].pic);
                     Bitmap img;
-                    int dir = objData.NPCs[i].mov2 & 0x3;
-                    if (objData.NPCs[i].mov2 == 0xff)
+                    int dir = (objData.NPCs[i].mov1-1) & 0x3;
+                    if (objData.NPCs[i].u2 == 0xff)
                         dir = 0;
                     if (dir < 3)
                         img = new Bitmap(SpriteSetsOW.interiorSet.sprites[cel].frames[dir]);
@@ -304,7 +305,7 @@ namespace Elf_s_World
                     }
                     g.DrawImageUnscaled(img, (objData.NPCs[i].xpos - 4) * 16, (objData.NPCs[i].ypos - 4) * 16);
                 }
-            }*/
+            }
         }
     }
 }
