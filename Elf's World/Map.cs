@@ -17,22 +17,27 @@ namespace Elf_s_World
             public byte width;
             public ushort pPart2;
             public byte loc;
+            public byte maptype;
             public byte song;
             public ushort pMapData;
             public ushort pMapText;
             public ushort pMapScript;
+            public ushort pUnknown;
             public byte conByte;
             public List<Connection> connections;
             public ushort pMapObject;
+            public int group;
 
             
             public void make1(byte b, byte t, byte u1, ushort p, byte l, byte m, byte u2)
             {
                 hBank = b;
                 tsID = t;
+                maptype = u1; //1 for towns, 2 for routes, 3 indoors, 4 cave
                 pPart2 = p;
                 loc = l;
                 song = m;
+                //u2 is always zero
             }
 
             public void make2(byte h, byte w, ushort d, ushort u1, ushort script, ushort obj, byte mask, byte[] data)
@@ -40,8 +45,9 @@ namespace Elf_s_World
                 height = h;
                 width = w;
                 pMapData = d;
-                pMapObject = obj;
+                pUnknown = u1;
                 pMapScript = script;
+                pMapObject = obj;
                 conByte = mask;
                 connections = new List<Connection>();
 
@@ -149,7 +155,7 @@ namespace Elf_s_World
             public byte textID;
             public byte NPCID;
             public byte levelroster;
-            public byte u1, u2, u3, u4;
+            public byte u1, u2, u3, u4, u5, u6, u7;
         }
 
         public Header header;
@@ -239,7 +245,7 @@ namespace Elf_s_World
                 int skip = 0;
                 for (int i = 0; i < objData.NPCs.Count(); i++)
                 {
-                    if (SpriteSetsOW.interiorSet.indexes.Contains(objData.NPCs[i].pic) == false)//if it's not already in, add it
+                    if (SpriteSetsOW.interiorSet.indexes.Contains(objData.NPCs[i].pic) == false && i - skip < 11)//if it's not already in, add it
                     {
                         SpriteSetsOW.interiorSet.indexes[i - skip] = objData.NPCs[i].pic;
                     }

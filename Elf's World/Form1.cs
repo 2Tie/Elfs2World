@@ -21,6 +21,8 @@ namespace Elf_s_World
         PokeTeam curTeam;
         //List<Palette> palettes;
 
+        int[] mapTs = { 13, 12, 03, 08, 06, 11, 04, 05, 10, 02, 03, 02, 02, 09, 01 };
+
         List<string> pokeNames = new List<string>();
         List<string> trainerNames = new List<string>();
 
@@ -187,6 +189,14 @@ namespace Elf_s_World
             {
                 Map m = new Map();
                 m.header.make1(bR.ReadByte(), bR.ReadByte(), bR.ReadByte(), bR.ReadUInt16(), bR.ReadByte(), bR.ReadByte(), bR.ReadByte());
+                int temp = 0;
+                while (temp < groupStarts.Count())
+                {
+                    if (groupStarts[temp] > i)
+                        break;
+                    temp++;
+                }
+                m.header.group = temp;
                 maps.Add(m);
             }
 
@@ -201,6 +211,8 @@ namespace Elf_s_World
                 {
                     bR.BaseStream.Seek((maps[i].header.hBank - 1) * 0x4000 + maps[i].header.pMapData, SeekOrigin.Begin);//seek to map data
                     int p = 0;
+                    if (maps[i].header.maptype == 1)
+                        p = mapTs[maps[i].header.group - 1];//14 - group
                     /*if (maps[i].header.tsID == 0x11)//cave
                         p = 0x23;
                     if (maps[i].header.tsID == 0x0F)//tower/agitha
@@ -257,7 +269,7 @@ namespace Elf_s_World
                         n.mov2 = bR.ReadByte();
                         n.textID = bR.ReadByte();
                         n.trainer = false;
-                        if (((n.textID >> 7) & 1) == 1)//one extra byte, item
+                        /*if (((n.textID >> 7) & 1) == 1)//one extra byte, item
                         {
                             n.type = (int)Map.NPC.Types.ITEM;
                             n.NPCID = bR.ReadByte();
@@ -272,11 +284,14 @@ namespace Elf_s_World
                                 n.type = (int)Map.NPC.Types.PKMN;
                             else
                                 n.type = (int)Map.NPC.Types.TRAINER;
-                        }
+                        }*/
                         n.u1 = bR.ReadByte();
                         n.u2 = bR.ReadByte();
                         n.u3 = bR.ReadByte();
                         n.u4 = bR.ReadByte();
+                        n.u5 = bR.ReadByte();
+                        n.u6 = bR.ReadByte();
+                        n.u7 = bR.ReadByte();
                         maps[i].objData.NPCs.Add(n);
                     }
 
@@ -691,7 +706,7 @@ namespace Elf_s_World
                         curMap += 1;
                         if (curMap == maxmaps)
                             curMap = 0;
-                    } while (maps[curMap].header.pMapData == 0 || maps[curMap].header.hBank == 1 || maps[curMap].header.tsID > maxtiles); //sanity check the invalid maps out
+                    } while (maps[curMap].objData.NPCnum > 0x80); //sanity check the invalid maps out
                 }
             }
             if (e.Button == MouseButtons.Right)
@@ -873,6 +888,8 @@ namespace Elf_s_World
                 detailsLabel.Text += "\nNumber of signs: " + maps[curMap].objData.signNum.ToString();
 
                 detailsLabel.Text += "\nNumber of NPCs: " + maps[curMap].objData.NPCnum.ToString();
+
+                detailsLabel.Text += "\nMap Type?: " + maps[curMap].header.maptype.ToString();
             }
 
             drawMap(curMap);
@@ -887,15 +904,7 @@ namespace Elf_s_World
 
         private void mapOnlyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int temp = 0;
-            while (temp < groupStarts.Count())
-            {
-                if (groupStarts[temp] > curMap)
-                    break;
-                temp++;
-            }
-
-            maps[curMap].img.Save(temp.ToString() + " " + (curMap - groupStarts[temp - 1] + 1).ToString() + " (" + curMap.ToString() + ")" + ".png");
+            maps[curMap].img.Save(maps[curMap].header.group.ToString() + " " + (curMap - groupStarts[maps[curMap].header.group - 1] + 1).ToString() + " (" + curMap.ToString() + ")" + ".png");
         }
 
         private void tilesetToolStripMenuItem_Click(object sender, EventArgs e)
@@ -930,15 +939,8 @@ namespace Elf_s_World
             BinaryWriter bW = new BinaryWriter(File.Create("dump.txt"));
             for (int i = 0; i < maxmaps; i++)
             {
-                int temp = 0;
-                while (temp < groupStarts.Count())
-                {
-                    if (groupStarts[temp] > curMap)
-                        break;
-                    temp++;
-                }
                 
-                bW.Write("Map " + i.ToString() + " (" + temp.ToString() + "-" + (curMap - groupStarts[temp - 1] + 1).ToString() + ")\n");
+                bW.Write("Map " + i.ToString() + " (" + maps[curMap].header.group.ToString() + "-" + (curMap - groupStarts[maps[curMap].header.group - 1] + 1).ToString() + ")\n");
                 bW.Write("W: " + maps[i].header.width.ToString() + "\n");
                 bW.Write("H: " + maps[i].header.height.ToString() + "\n");
                 bW.Write("NPC total: " + maps[i].objData.NPCnum.ToString() + "\n");
