@@ -33,7 +33,7 @@ namespace Elf_s_World
             {
                 hBank = b;
                 tsID = t;
-                maptype = u1; //1 for towns, 2 for routes, 3 indoors, 4 cave
+                maptype = u1; //1 for towns, 2 for routes, 3 indoors, 4 cave, 6 is gates and cable club
                 pPart2 = p;
                 loc = l;
                 song = m;

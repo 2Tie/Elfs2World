@@ -83,16 +83,24 @@ namespace Elf_s_World
                 maxmaps = 249;
                 maxtiles = 25;
             }
-            if (title == "POKEMON2GOLD\0\0\0" || title == "POKEMON2SILVER\0")
-            {
-                gameid = 4;
-                maxmaps = 0xE4;//228
-                maxtiles = 28;
-            }
             else
             {
                 maxmaps = 248;
                 maxtiles = 24;
+            }
+            if (title == "POKEMON2GOLD\0\0\0" || title == "POKEMON2SILVER\0")
+            {
+                bR.BaseStream.Seek(0x1E5, SeekOrigin.Begin);
+                byte debug = bR.ReadByte();
+                if (debug == 0x9F)
+                    gameid = 4;
+                if (debug == 0xDB)
+                {
+                    gameid = 5;
+                    title += "Debug ";
+                }
+                maxmaps = 0xE4;//228
+                maxtiles = 28;
             }
 
             if (gameid == -1)
@@ -211,7 +219,7 @@ namespace Elf_s_World
                 {
                     bR.BaseStream.Seek((maps[i].header.hBank - 1) * 0x4000 + maps[i].header.pMapData, SeekOrigin.Begin);//seek to map data
                     int p = 0;
-                    if (maps[i].header.maptype == 1)
+                    if (maps[i].header.maptype%2 == 1)
                         p = mapTs[maps[i].header.group - 1];//14 - group
                     /*if (maps[i].header.tsID == 0x11)//cave
                         p = 0x23;
@@ -458,7 +466,7 @@ namespace Elf_s_World
             {
                 totalsprites = 82;
             }
-            if (gameid == 4)
+            if (gameid > 3)
                 totalsprites = 0x5B;
 
             bR.BaseStream.Seek(Offsets.mapSpriteSetPointer, SeekOrigin.Begin);
@@ -696,6 +704,7 @@ namespace Elf_s_World
                 if (viewTiles)
                 {
                     curTiles += 1;
+                    curTiles %= maxtiles;
                     toolStripStatusLabel3.Text = "TS: " + curTiles.ToString();
                 }
                 else
@@ -707,17 +716,29 @@ namespace Elf_s_World
                         if (curMap == maxmaps)
                             curMap = 0;
                     } while (maps[curMap].objData.NPCnum > 0x80); //sanity check the invalid maps out
+                    showMapDeets();
                 }
             }
             if (e.Button == MouseButtons.Right)
             {
-                prevMap = -1;
-                do
+                if (viewTiles)
                 {
-                    curMap -= 1;
-                    if (curMap == -1)
-                        curMap = maxmaps - 1;
-                } while (maps[curMap].header.pMapData == 0 || maps[curMap].header.hBank == 1 || maps[curMap].header.tsID > maxtiles); //sanity check the invalid maps out
+                    curTiles -= 1;
+                    if (curTiles < 0)
+                        curTiles = maxtiles - 1;
+                    toolStripStatusLabel3.Text = "TS: " + curTiles.ToString();
+                }
+                else
+                {
+                    prevMap = -1;
+                    do
+                    {
+                        curMap -= 1;
+                        if (curMap == -1)
+                            curMap = maxmaps - 1;
+                    } while (maps[curMap].header.pMapData == 0 || maps[curMap].header.hBank == 1 || maps[curMap].header.tsID > maxtiles); //sanity check the invalid maps out
+                    showMapDeets();
+                }
             }
             if (e.Button == MouseButtons.Middle)
             {
@@ -752,7 +773,10 @@ namespace Elf_s_World
             if (viewTiles)
                 drawTileset(curTiles);
             else
+            {
                 drawMap(curMap);
+                showMapDeets();
+            }
         }
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
@@ -850,46 +874,7 @@ namespace Elf_s_World
             }
             if (!selected)//clicked on nothing, show map data again
             {
-                selx = -1;
-                sely = -1;
-
-                dState = DEETS.MAP;
-                byte dummy = maps[curMap].header.conByte;
-                for (int i = 0; i < maps[curMap].header.connections.Count(); i++)
-                {
-                    if ((dummy & 0x08) == 0x08)
-                    {
-                        detailsLabel.Text += "North connection: \n";
-                        dummy = (byte)(dummy - 8);
-                    }
-                    else if ((dummy & 0x04) == 0x04)
-                    {
-                        detailsLabel.Text += "South connection: \n";
-                        dummy = (byte)(dummy - 4);
-                    }
-                    else if ((dummy & 0x02) == 0x02)
-                    {
-                        detailsLabel.Text += "West connection: \n";
-                        dummy = (byte)(dummy - 2);
-                    }
-                    else if ((dummy & 0x01) == 0x01)
-                    {
-                        detailsLabel.Text += "East connection: \n";
-                        dummy = (byte)(dummy - 1);
-                    }
-                    detailsLabel.Text += "Group: " + maps[curMap].header.connections[i].connGroup.ToString() + " Map: " + maps[curMap].header.connections[i].connID.ToString() + "\n";
-                }
-                //list the pointers?
-
-                detailsLabel.Text += "\nWidth: " + maps[curMap].header.width.ToString() + "\nHeight: " + maps[curMap].header.height.ToString();
-
-                detailsLabel.Text += "\nHas scripts? " + maps[curMap].hasScripts.ToString();
-
-                detailsLabel.Text += "\nNumber of signs: " + maps[curMap].objData.signNum.ToString();
-
-                detailsLabel.Text += "\nNumber of NPCs: " + maps[curMap].objData.NPCnum.ToString();
-
-                detailsLabel.Text += "\nMap Type?: " + maps[curMap].header.maptype.ToString();
+                showMapDeets();
             }
 
             drawMap(curMap);
@@ -911,6 +896,7 @@ namespace Elf_s_World
         {
             viewTiles = !viewTiles;
             tilesetToolStripMenuItem.Checked = viewTiles;
+            drawTileset(curTiles);
         }
 
         private void detailsLabel_MouseClick(object sender, MouseEventArgs e)
@@ -924,6 +910,7 @@ namespace Elf_s_World
                     curMap = groupStarts[maps[curMap].header.connections[y].connGroup - 1] + maps[curMap].header.connections[y].connID - 1;
                     drawMap(curMap);
                     resetPanel();
+                    showMapDeets();
                 }
             }
         }
@@ -950,6 +937,50 @@ namespace Elf_s_World
             }
 
             bW.Close();
+        }
+
+        void showMapDeets()
+        {
+            selx = -1;
+            sely = -1;
+
+            dState = DEETS.MAP;
+            byte dummy = maps[curMap].header.conByte;
+            for (int i = 0; i < maps[curMap].header.connections.Count(); i++)
+            {
+                if ((dummy & 0x08) == 0x08)
+                {
+                    detailsLabel.Text += "North connection: \n";
+                    dummy = (byte)(dummy - 8);
+                }
+                else if ((dummy & 0x04) == 0x04)
+                {
+                    detailsLabel.Text += "South connection: \n";
+                    dummy = (byte)(dummy - 4);
+                }
+                else if ((dummy & 0x02) == 0x02)
+                {
+                    detailsLabel.Text += "West connection: \n";
+                    dummy = (byte)(dummy - 2);
+                }
+                else if ((dummy & 0x01) == 0x01)
+                {
+                    detailsLabel.Text += "East connection: \n";
+                    dummy = (byte)(dummy - 1);
+                }
+                detailsLabel.Text += "Group: " + maps[curMap].header.connections[i].connGroup.ToString() + " Map: " + maps[curMap].header.connections[i].connID.ToString() + "\n";
+            }
+            //list the pointers?
+
+            detailsLabel.Text += "\nWidth: " + maps[curMap].header.width.ToString() + "\nHeight: " + maps[curMap].header.height.ToString();
+
+            detailsLabel.Text += "\nHas scripts? " + maps[curMap].hasScripts.ToString();
+
+            detailsLabel.Text += "\nNumber of signs: " + maps[curMap].objData.signNum.ToString();
+
+            detailsLabel.Text += "\nNumber of NPCs: " + maps[curMap].objData.NPCnum.ToString();
+
+            detailsLabel.Text += "\nMap Type?: " + maps[curMap].header.maptype.ToString();
         }
     }
 }

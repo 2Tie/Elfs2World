@@ -65,6 +65,13 @@ namespace Elf_s_World
                         mapBankPointer = 0x10023;
                         mapSpriteSetPointer = 0x1423B;
                         break;
+
+                    case 5://debug
+                        tilesetHeaderPointer = 0xC88D;
+                        palletesPointer = 0x9C4C;
+                        mapBankPointer = 0x10023;
+                        mapSpriteSetPointer = 0x1423B;
+                        break;
                 }
             }
             else//US
