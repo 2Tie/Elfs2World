@@ -736,7 +736,7 @@ namespace Elf_s_World
                         curMap -= 1;
                         if (curMap == -1)
                             curMap = maxmaps - 1;
-                    } while (maps[curMap].header.pMapData == 0 || maps[curMap].header.hBank == 1 || maps[curMap].header.tsID > maxtiles); //sanity check the invalid maps out
+                    } while (maps[curMap].objData.NPCnum > 0x80); //sanity check the invalid maps out
                     showMapDeets();
                 }
             }
