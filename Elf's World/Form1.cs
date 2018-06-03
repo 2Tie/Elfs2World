@@ -127,7 +127,7 @@ namespace Elf_s_World
             for (int i = 0; i < maxtiles; i++)
             {
                 Tileset t = new Tileset();
-                t.header.make(bR.ReadByte(), bR.ReadUInt16(), bR.ReadUInt16(), bR.ReadUInt16(), bR.ReadByte(), bR.ReadByte(), bR.ReadByte(), bR.ReadByte());
+                t.header.make(bR.ReadByte(), bR.ReadUInt16(), bR.ReadUInt16(), bR.ReadUInt16(), bR.ReadUInt16(), bR.ReadByte(), bR.ReadByte());
                 tilesets.Add(t);
             }
 
@@ -175,7 +175,11 @@ namespace Elf_s_World
                 tilesets[i].loadBlocks(bR.ReadBytes(128 * 16));//TODO: find actual length?
 
                 tilesets[i].buildBlocks();
+
+                bR.BaseStream.Seek(bank + tilesets[i].header.pCollision, SeekOrigin.Begin);
+                tilesets[i].header.collision = bR.ReadBytes(0x80*4);
             }
+
 
             /*tilesets[0].pal = 0;
             tilesets[0].buildBlocks();
@@ -551,9 +555,28 @@ namespace Elf_s_World
             g.Clear(SystemColors.Control);
             for (int i = 0; i < tilesets[tid].tiles.Count(); i++)
                 g.DrawImageUnscaled(tilesets[tid].tiles[i], (i % 16) * 8, (int)(i / 16) * 8);
+                //g.FillRectangle(new SolidBrush(Color.FromArgb(120 * ((tilesets[tid].header.collision[i/8] >> (7-(i % 8))) & 0x1), Color.Aquamarine)), (i % 16) * 8, (int)(i / 16) * 8, 8, 8);
 
             for (int i = 0; i < 128; i++)
                 g.DrawImageUnscaled(tilesets[tid].blocks[i], (i % 10) * 32, (2 + (int)(i / 10)) * 32);
+
+            for (int i = 0; i < tilesets[tid].header.collision.Count(); i++)
+            {
+                int t = tilesets[tid].header.collision[i];
+                int b = i / 4;//which block we're in
+                int c = i % 4;//which corner we're in
+                Color colour = Color.Transparent;
+                if (t == 0x00)//floor
+                    colour = Color.Yellow;
+                if (t == 0x07 || t == 0x01)//solid
+                    colour = Color.Red;
+                if (t == 0x14 || t == 0x18)//grass
+                    colour = Color.Green;
+                if (t == 0x21 || t == 0x29)//water
+                    colour = Color.Blue;
+                if (colour != Color.Transparent)
+                    g.FillRectangle(new SolidBrush(Color.FromArgb(120, colour)), (b % 10) * 32 + (c % 2) * 16, (2 + (b / 10)) * 32 + (c / 2) * 16, 16, 16);
+            }
         }
 
         private void drawMap(int mid)
@@ -789,95 +812,112 @@ namespace Elf_s_World
             sely = (int)Math.Floor((float)e.Y / 16);
             detailsLabel.Text = "";
 
-            bool selected = false;
-
-            //find if any NPCs were clicked on
-            for(int i = 0; i < maps[curMap].objData.NPCnum; i++)
+            if (viewTiles)
             {
-                if (selx+4 == maps[curMap].objData.NPCs[i].xpos && sely+4 == maps[curMap].objData.NPCs[i].ypos)
+                //check the tile clicked on
+                detailsLabel.Text = selx.ToString() + " " + sely.ToString();
+                if(sely > 3 && selx < 20)
                 {
-                    //clicked on an NPC
-                    selected = true;
-                    /*if (maps[curMap].objData.NPCs[i].trainer)
-                    {
-                        if (maps[curMap].objData.NPCs[i].NPCID > 200)//trainer
-                        {
-                            getTeam(maps[curMap].objData.NPCs[i].NPCID, maps[curMap].objData.NPCs[i].levelroster);
-                            detailsLabel.Text = trainerNames[maps[curMap].objData.NPCs[i].NPCID - 201] + "\nClass Roster #" + maps[curMap].objData.NPCs[i].levelroster.ToString() + "\n";
-                            for (int j = 0; j < curTeam.levels.Count(); j++)
-                                detailsLabel.Text += "LV: " + curTeam.levels[j].ToString() + " " + pokeNames[curTeam.species[j] - 1] + "\n";
-                        }
-                        else //pokemon
-                        {
-                            detailsLabel.Text = pokeNames[maps[curMap].objData.NPCs[i].NPCID - 1] + " LV: " + maps[curMap].objData.NPCs[i].levelroster.ToString();
-                        }
-                    }
-                    else //generic npc*/
-                    {
-                        detailsLabel.Text = maps[curMap].objData.NPCs[i].mov1.ToString();
-                        detailsLabel.Text += "\n" + maps[curMap].objData.NPCs[i].u2.ToString();
-                    }
-                    break;
+                    int sx = selx;
+                    int sy = sely - 4;
+                    int bx = sx / 2;//tx = selx % 2
+                    int by = sy / 2;//ty = sely % 2?
+                    detailsLabel.Text += "\n" + bx.ToString() + " " + by.ToString();
+                    detailsLabel.Text += "\nColl ID: " + tilesets[curTiles].header.collision[(by*10 + bx) * 4 + (sely % 2) * 2 + selx % 2].ToString();
                 }
             }
-            if(!selected)
+            else
             {
-                for(int i = 0; i < maps[curMap].objData.signNum; i++)
+                bool selected = false;
+
+                //find if any NPCs were clicked on
+                for (int i = 0; i < maps[curMap].objData.NPCnum; i++)
                 {
-                    if (selx == maps[curMap].objData.signs[i].xpos && sely == maps[curMap].objData.signs[i].ypos)
+                    if (selx + 4 == maps[curMap].objData.NPCs[i].xpos && sely + 4 == maps[curMap].objData.NPCs[i].ypos)
                     {
-                        //clicked on a sign
+                        //clicked on an NPC
                         selected = true;
-                        detailsLabel.Text = "Text ID: " + maps[curMap].objData.signs[i].textID.ToString();
+                        /*if (maps[curMap].objData.NPCs[i].trainer)
+                        {
+                            if (maps[curMap].objData.NPCs[i].NPCID > 200)//trainer
+                            {
+                                getTeam(maps[curMap].objData.NPCs[i].NPCID, maps[curMap].objData.NPCs[i].levelroster);
+                                detailsLabel.Text = trainerNames[maps[curMap].objData.NPCs[i].NPCID - 201] + "\nClass Roster #" + maps[curMap].objData.NPCs[i].levelroster.ToString() + "\n";
+                                for (int j = 0; j < curTeam.levels.Count(); j++)
+                                    detailsLabel.Text += "LV: " + curTeam.levels[j].ToString() + " " + pokeNames[curTeam.species[j] - 1] + "\n";
+                            }
+                            else //pokemon
+                            {
+                                detailsLabel.Text = pokeNames[maps[curMap].objData.NPCs[i].NPCID - 1] + " LV: " + maps[curMap].objData.NPCs[i].levelroster.ToString();
+                            }
+                        }
+                        else //generic npc*/
+                        {
+                            detailsLabel.Text = maps[curMap].objData.NPCs[i].mov1.ToString();
+                            detailsLabel.Text += "\n" + maps[curMap].objData.NPCs[i].u2.ToString();
+                        }
                         break;
                     }
                 }
-            }
-            if(!selected)
-            {
-                for(int i = 0; i < maps[curMap].objData.warpNum; i++)
+                if (!selected)
                 {
-                    if (selx == maps[curMap].objData.warps[i].xpos && sely == maps[curMap].objData.warps[i].ypos)
+                    for (int i = 0; i < maps[curMap].objData.signNum; i++)
                     {
-                        //clicked on a warp
-                        selected = true;
-                        dState = DEETS.WARP;
-                        if (e.Button == MouseButtons.Left)//display
+                        if (selx == maps[curMap].objData.signs[i].xpos && sely == maps[curMap].objData.signs[i].ypos)
                         {
-                            detailsLabel.Text = "Destination group: " + maps[curMap].objData.warps[i].destGroup.ToString() + "\nDestination map: " + maps[curMap].objData.warps[i].destMap.ToString() + "\nDestination ID: " + maps[curMap].objData.warps[i].destID.ToString();
-                            if (maps[curMap].objData.warps[i].destID == 0xFF && prevMap != -1)
-                                detailsLabel.Text += " (" + prevMap.ToString() + ")";
-                            break;
-                        }
-                        if (e.Button == MouseButtons.Right)//follow
-                        {
-                            int dm = groupStarts[maps[curMap].objData.warps[i].destGroup - 1] + maps[curMap].objData.warps[i].destMap - 1;
-                            if (dm == 0xFF && prevMap != -1)
-                                dm = prevMap;
-                            if (dm != 0xFF)
-                                if (maps[dm].header.pMapData != 0 && maps[dm].header.hBank != 1 && maps[dm].header.tsID < maxtiles)
-                                {
-                                    //highlight where you came from
-                                    selx = maps[dm].objData.warps[maps[curMap].objData.warps[i].destID - 1].xpos;
-                                    sely = maps[dm].objData.warps[maps[curMap].objData.warps[i].destID - 1].ypos;
-                                    detailsLabel.Text = "";
-                                    //go there
-                                    if (curMap < 37)
-                                        prevMap = curMap;
-                                    curMap = dm;
-                                    resetPanel();
-                                }
+                            //clicked on a sign
+                            selected = true;
+                            detailsLabel.Text = "Text ID: " + maps[curMap].objData.signs[i].textID.ToString();
                             break;
                         }
                     }
                 }
-            }
-            if (!selected)//clicked on nothing, show map data again
-            {
-                showMapDeets();
-            }
+                if (!selected)
+                {
+                    for (int i = 0; i < maps[curMap].objData.warpNum; i++)
+                    {
+                        if (selx == maps[curMap].objData.warps[i].xpos && sely == maps[curMap].objData.warps[i].ypos)
+                        {
+                            //clicked on a warp
+                            selected = true;
+                            dState = DEETS.WARP;
+                            if (e.Button == MouseButtons.Left)//display
+                            {
+                                detailsLabel.Text = "Destination group: " + maps[curMap].objData.warps[i].destGroup.ToString() + "\nDestination map: " + maps[curMap].objData.warps[i].destMap.ToString() + "\nDestination ID: " + maps[curMap].objData.warps[i].destID.ToString();
+                                if (maps[curMap].objData.warps[i].destID == 0xFF && prevMap != -1)
+                                    detailsLabel.Text += " (" + prevMap.ToString() + ")";
+                                break;
+                            }
+                            if (e.Button == MouseButtons.Right)//follow
+                            {
+                                int dm = groupStarts[maps[curMap].objData.warps[i].destGroup - 1] + maps[curMap].objData.warps[i].destMap - 1;
+                                if (dm == 0xFF && prevMap != -1)
+                                    dm = prevMap;
+                                if (dm != 0xFF)
+                                    if (maps[dm].header.pMapData != 0 && maps[dm].header.hBank != 1 && maps[dm].header.tsID < maxtiles)
+                                    {
+                                        //highlight where you came from
+                                        selx = maps[dm].objData.warps[maps[curMap].objData.warps[i].destID - 1].xpos;
+                                        sely = maps[dm].objData.warps[maps[curMap].objData.warps[i].destID - 1].ypos;
+                                        detailsLabel.Text = "";
+                                        //go there
+                                        if (curMap < 37)
+                                            prevMap = curMap;
+                                        curMap = dm;
+                                        resetPanel();
+                                    }
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!selected)//clicked on nothing, show map data again
+                {
+                    showMapDeets();
+                }
 
-            drawMap(curMap);
+                drawMap(curMap);
+            }
         }
 
         protected override void WndProc(ref Message m)//prevent alt key redraw from hiding picturebox's image

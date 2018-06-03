@@ -12,19 +12,21 @@ namespace Elf_s_World
         public struct Header
         {
             public byte bankID;
-            public UInt16 pBlocks, pTiles, pCollision;
+            public ushort pBlocks, pTiles, pCollision;
             byte TOT1, TOT2, TOT3;
             byte grass;
             byte animated;//nonzero animates water, 2 animates flower
 
-            public void make(byte bid, UInt16 pb, UInt16 pt, UInt16 pc, byte t1, byte t2, byte t3, byte unknown)
+            public byte[] collision;
+
+            public void make(byte bid, ushort pb, ushort pt, ushort pc, ushort pu1, byte t3, byte unknown)
             {
                 bankID = bid;
                 pBlocks = pb;
                 pTiles = pt;
                 pCollision = pc;
-                TOT1 = t1;
-                TOT2 = t2;
+                //TOT1 = t1;
+                //TOT2 = t2;
                 TOT3 = t3;
             }
         }
