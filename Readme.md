@@ -1,0 +1,1 @@
+to change maps or tilesets, click on the number in the bottom left. left click for + 1, right click for - 1. right click a warp or a connection listing to "follow" it.
