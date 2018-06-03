@@ -577,6 +577,9 @@ namespace Elf_s_World
                 if (colour != Color.Transparent)
                     g.FillRectangle(new SolidBrush(Color.FromArgb(120, colour)), (b % 10) * 32 + (c % 2) * 16, (2 + (b / 10)) * 32 + (c / 2) * 16, 16, 16);
             }
+
+            detailsLabel.Text = "Bank " + tilesets[tid].header.bankID.ToString() + " pointer " + tilesets[tid].header.pCollision.ToString();
+            detailsLabel.Text += "\nAbsolute pointer:\n" + ((tilesets[tid].header.bankID - 1) * 0x4000 + tilesets[tid].header.pCollision).ToString();
         }
 
         private void drawMap(int mid)
@@ -855,6 +858,8 @@ namespace Elf_s_World
                         {
                             detailsLabel.Text = maps[curMap].objData.NPCs[i].mov1.ToString();
                             detailsLabel.Text += "\n" + maps[curMap].objData.NPCs[i].u2.ToString();
+                            //detailsLabel.Text += "\nBank: " + maps[curMap].header.hBank.ToString();
+                            detailsLabel.Text += "\nAbsolute pointer to NPC:\n" + ((maps[curMap].header.hBank - 1)*0x4000 + maps[curMap].header.pMapObject + maps[curMap].objData.warpNum*7 + maps[curMap].objData.signNum*4 + i*13 + 5).ToString();
                         }
                         break;
                     }
