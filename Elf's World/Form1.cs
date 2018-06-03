@@ -55,7 +55,7 @@ namespace Elf_s_World
             toolStripStatusLabel3.Text = "";
         }
 
-        private void openROM(object sender, EventArgs e)
+        private void OpenROM(object sender, EventArgs e)
         {
             OpenFileDialog dial = new OpenFileDialog() { Filter = "Super Game Boy ROMs (*.sgb)|*.sgb" };
             if (dial.ShowDialog() != DialogResult.OK) return;
@@ -543,6 +543,8 @@ namespace Elf_s_World
             toolStripStatusLabel3.Text = "Map: " + curMap.ToString();
             detailsPanel.Visible = true;
             viewToolStripMenuItem.Enabled = true;
+            exportToolStripMenuItem.Enabled = true;
+
 
             drawMap(curMap);
 
