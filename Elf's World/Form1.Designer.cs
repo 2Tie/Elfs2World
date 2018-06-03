@@ -37,6 +37,7 @@
             this.tilesetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mapOnlyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dataDumpToTxtToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -45,7 +46,6 @@
             this.detailsPanel = new System.Windows.Forms.Panel();
             this.detailsDivider = new System.Windows.Forms.Label();
             this.detailsLabel = new System.Windows.Forms.Label();
-            this.dataDumpToTxtToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -76,14 +76,14 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.openToolStripMenuItem.Text = "Open";
-            this.openToolStripMenuItem.Click += new System.EventHandler(this.openROM);
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenROM);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -101,14 +101,14 @@
             // 
             this.entityMarkersToolStripMenuItem.CheckOnClick = true;
             this.entityMarkersToolStripMenuItem.Name = "entityMarkersToolStripMenuItem";
-            this.entityMarkersToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.entityMarkersToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.entityMarkersToolStripMenuItem.Text = "Entity Markers";
             this.entityMarkersToolStripMenuItem.Click += new System.EventHandler(this.entityMarkersToolStripMenuItem_Click);
             // 
             // tilesetToolStripMenuItem
             // 
             this.tilesetToolStripMenuItem.Name = "tilesetToolStripMenuItem";
-            this.tilesetToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.tilesetToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.tilesetToolStripMenuItem.Text = "Tileset";
             this.tilesetToolStripMenuItem.Click += new System.EventHandler(this.tilesetToolStripMenuItem_Click);
             // 
@@ -117,6 +117,7 @@
             this.exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mapOnlyToolStripMenuItem,
             this.dataDumpToTxtToolStripMenuItem});
+            this.exportToolStripMenuItem.Enabled = false;
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
             this.exportToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.exportToolStripMenuItem.Text = "Export";
@@ -124,9 +125,16 @@
             // mapOnlyToolStripMenuItem
             // 
             this.mapOnlyToolStripMenuItem.Name = "mapOnlyToolStripMenuItem";
-            this.mapOnlyToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.mapOnlyToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.mapOnlyToolStripMenuItem.Text = "Map only";
             this.mapOnlyToolStripMenuItem.Click += new System.EventHandler(this.mapOnlyToolStripMenuItem_Click);
+            // 
+            // dataDumpToTxtToolStripMenuItem
+            // 
+            this.dataDumpToTxtToolStripMenuItem.Name = "dataDumpToTxtToolStripMenuItem";
+            this.dataDumpToTxtToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.dataDumpToTxtToolStripMenuItem.Text = "Data dump to txt";
+            this.dataDumpToTxtToolStripMenuItem.Click += new System.EventHandler(this.dataDumpToTxtToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -203,13 +211,6 @@
             this.detailsLabel.TabIndex = 0;
             this.detailsLabel.Text = "dummy";
             this.detailsLabel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.detailsLabel_MouseClick);
-            // 
-            // dataDumpToTxtToolStripMenuItem
-            // 
-            this.dataDumpToTxtToolStripMenuItem.Name = "dataDumpToTxtToolStripMenuItem";
-            this.dataDumpToTxtToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.dataDumpToTxtToolStripMenuItem.Text = "Data dump to txt";
-            this.dataDumpToTxtToolStripMenuItem.Click += new System.EventHandler(this.dataDumpToTxtToolStripMenuItem_Click);
             // 
             // Form1
             // 
