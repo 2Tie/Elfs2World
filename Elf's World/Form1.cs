@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Input;
 
 namespace Elf_s_World
 {
@@ -26,7 +21,7 @@ namespace Elf_s_World
         List<string> pokeNames = new List<string>();
         List<string> trainerNames = new List<string>();
 
-        List<int> groupStarts = new List<int>{ 0, 15, 37, 56, 70, 86, 100, 120, 128, 143, 156, 194, 196, 198, 204 };
+        List<int> groupStarts = new List<int> { 0, 15, 37, 56, 70, 86, 100, 120, 128, 143, 156, 194, 196, 198, 204 };
 
         int maxmaps = 248;
         int maxtiles = 24;
@@ -52,10 +47,9 @@ namespace Elf_s_World
         {
             InitializeComponent();
             toolStripStatusLabel1.Text = "Started";
-            toolStripStatusLabel3.Text = "";
         }
 
-        private void openROM(object sender, EventArgs e)
+        private void OpenROM(object sender, EventArgs e)
         {
             OpenFileDialog dial = new OpenFileDialog() { Filter = "Super Game Boy ROMs (*.sgb)|*.sgb" };
             if (dial.ShowDialog() != DialogResult.OK) return;
@@ -154,7 +148,7 @@ namespace Elf_s_World
                 {
                     bR.BaseStream.Seek(0x33C00, SeekOrigin.Begin);
                     byte[] top = bR.ReadBytes(0x20 * 0x10);
-                    
+
                     bR.BaseStream.Seek(bank + tilesets[i].header.pTiles, SeekOrigin.Begin);
                     //bR.BaseStream.Seek(0x19800, SeekOrigin.Begin);
                     //int length = tilesets[i].header.pBlocks - tilesets[i].header.pTiles;
@@ -177,7 +171,7 @@ namespace Elf_s_World
                 tilesets[i].buildBlocks();
 
                 bR.BaseStream.Seek(bank + tilesets[i].header.pCollision, SeekOrigin.Begin);
-                tilesets[i].header.collision = bR.ReadBytes(0x80*4);
+                tilesets[i].header.collision = bR.ReadBytes(0x80 * 4);
             }
 
 
@@ -193,11 +187,11 @@ namespace Elf_s_World
                 g.DrawImageUnscaled(tilesets[tid].blocks[i], (i%9)*32, (2 + (int)(i/9)) * 32);*/
 
             //TODO: this stuff later
-            
+
 
             bR.BaseStream.Seek(Offsets.mapBankPointer, SeekOrigin.Begin);//map headers
 
-            for(int i = 0; i < maxmaps; i++)
+            for (int i = 0; i < maxmaps; i++)
             {
                 Map m = new Map();
                 m.header.make1(bR.ReadByte(), bR.ReadByte(), bR.ReadByte(), bR.ReadUInt16(), bR.ReadByte(), bR.ReadByte(), bR.ReadByte());
@@ -213,9 +207,9 @@ namespace Elf_s_World
             }
 
             //build the map headers and load the maps
-            for(int i = 0; i < maxmaps; i++)//248
+            for (int i = 0; i < maxmaps; i++)//248
             {
-                bR.BaseStream.Seek((maps[i].header.hBank-1)*0x4000 + maps[i].header.pPart2, SeekOrigin.Begin);//seek to second map header
+                bR.BaseStream.Seek((maps[i].header.hBank - 1) * 0x4000 + maps[i].header.pPart2, SeekOrigin.Begin);//seek to second map header
                 //bR.BaseStream.Seek(0xBD3DD, SeekOrigin.Begin);
 
                 maps[i].header.make2(bR.ReadByte(), bR.ReadByte(), bR.ReadUInt16(), bR.ReadUInt16(), bR.ReadUInt16(), bR.ReadUInt16(), bR.ReadByte(), bR.ReadBytes(48));
@@ -223,7 +217,7 @@ namespace Elf_s_World
                 {
                     bR.BaseStream.Seek((maps[i].header.hBank - 1) * 0x4000 + maps[i].header.pMapData, SeekOrigin.Begin);//seek to map data
                     int p = 0;
-                    if (maps[i].header.maptype%2 == 1)
+                    if (maps[i].header.maptype % 2 == 1)
                         p = mapTs[maps[i].header.group - 1];//14 - group
                     /*if (maps[i].header.tsID == 0x11)//cave
                         p = 0x23;
@@ -239,7 +233,7 @@ namespace Elf_s_World
                     bR.ReadByte();
                     bR.ReadByte();//padding?
                     maps[i].objData.warpNum = bR.ReadByte();
-                    for(int j = 0; j < maps[i].objData.warpNum; j++)
+                    for (int j = 0; j < maps[i].objData.warpNum; j++)
                     {
                         Map.Warp w = new Map.Warp();
                         w.ypos = bR.ReadByte();
@@ -254,7 +248,7 @@ namespace Elf_s_World
 
                     //signs
                     maps[i].objData.signNum = bR.ReadByte();
-                    for(int j=0;j<maps[i].objData.signNum; j++)
+                    for (int j = 0; j < maps[i].objData.signNum; j++)
                     {
                         Map.Sign s = new Map.Sign();
                         s.ypos = bR.ReadByte();
@@ -271,7 +265,7 @@ namespace Elf_s_World
 
                     //npcs
                     maps[i].objData.NPCnum = bR.ReadByte();
-                    for(int j = 0; j < maps[i].objData.NPCnum; j++)
+                    for (int j = 0; j < maps[i].objData.NPCnum; j++)
                     {
                         Map.NPC n = new Map.NPC();
                         n.pic = bR.ReadByte();
@@ -466,7 +460,7 @@ namespace Elf_s_World
             }
             */
             int totalsprites = 72;
-            if(gameid == 3)
+            if (gameid == 3)
             {
                 totalsprites = 82;
             }
@@ -476,7 +470,7 @@ namespace Elf_s_World
             bR.BaseStream.Seek(Offsets.mapSpriteSetPointer, SeekOrigin.Begin);
 
             //load the sprite headers
-            for(int i = 0; i < totalsprites; i++)//72 sprites in most - 82 in yellow/pikachu
+            for (int i = 0; i < totalsprites; i++)//72 sprites in most - 82 in yellow/pikachu
             {
                 SpriteSetsOW.SpriteData s = new SpriteSetsOW.SpriteData();
                 s.dataP = bR.ReadUInt16();
@@ -485,7 +479,7 @@ namespace Elf_s_World
                 SpriteSetsOW.spritedatas.Add(s);
             }
             //load each sprite's data[]
-            for(int i = 0; i < totalsprites; i++)
+            for (int i = 0; i < totalsprites; i++)
             {
                 bR.BaseStream.Seek((SpriteSetsOW.spritedatas[i].bank - 1) * 0x4000 + SpriteSetsOW.spritedatas[i].dataP, SeekOrigin.Begin);
                 SpriteSetsOW.SpriteData s = SpriteSetsOW.spritedatas[i];
@@ -540,9 +534,10 @@ namespace Elf_s_World
 
             loaded = true;
 
-            toolStripStatusLabel3.Text = "Map: " + curMap.ToString();
             detailsPanel.Visible = true;
             viewToolStripMenuItem.Enabled = true;
+            exportToolStripMenuItem.Enabled = true;
+
 
             drawMap(curMap);
 
@@ -555,7 +550,7 @@ namespace Elf_s_World
             g.Clear(SystemColors.Control);
             for (int i = 0; i < tilesets[tid].tiles.Count(); i++)
                 g.DrawImageUnscaled(tilesets[tid].tiles[i], (i % 16) * 8, (int)(i / 16) * 8);
-                //g.FillRectangle(new SolidBrush(Color.FromArgb(120 * ((tilesets[tid].header.collision[i/8] >> (7-(i % 8))) & 0x1), Color.Aquamarine)), (i % 16) * 8, (int)(i / 16) * 8, 8, 8);
+            //g.FillRectangle(new SolidBrush(Color.FromArgb(120 * ((tilesets[tid].header.collision[i/8] >> (7-(i % 8))) & 0x1), Color.Aquamarine)), (i % 16) * 8, (int)(i / 16) * 8, 8, 8);
 
             for (int i = 0; i < 128; i++)
                 g.DrawImageUnscaled(tilesets[tid].blocks[i], (i % 10) * 32, (2 + (int)(i / 10)) * 32);
@@ -593,7 +588,7 @@ namespace Elf_s_World
             Graphics g = pictureBox1.CreateGraphics();
 
             g.Clear(SystemColors.Control);
-            
+
             g.DrawImageUnscaled(maps[mid].img, 0, 0);
 
             if (viewEnts)
@@ -643,9 +638,6 @@ namespace Elf_s_World
             //draw selection box
             if (selx != -1 && sely != -1)
                 g.DrawRectangle(new Pen(new SolidBrush(Color.Red)), selx * 16, sely * 16, 16, 16);
-            
-
-            toolStripStatusLabel3.Text = "Map: " + mid.ToString();
         }
 
         struct HiddenItem
@@ -669,7 +661,7 @@ namespace Elf_s_World
             bR.BaseStream.Seek(Offsets.trainersPointer + 2 * (type - 201), SeekOrigin.Begin);
             bR.BaseStream.Seek(((long)Math.Floor(bR.BaseStream.Position / (decimal)0x4000) - 1) * 0x4000 + bR.ReadUInt16(), SeekOrigin.Begin);
             //read 0x0s until you meet roster
-            for(int i = 0; i < roster - 1; i++)
+            for (int i = 0; i < roster - 1; i++)
             {
                 while (bR.ReadByte() != 0x00) ;
             }
@@ -725,84 +717,7 @@ namespace Elf_s_World
 
         private void toolStripStatusLabel3_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                if (viewTiles)
-                {
-                    curTiles += 1;
-                    curTiles %= maxtiles;
-                    toolStripStatusLabel3.Text = "TS: " + curTiles.ToString();
-                }
-                else
-                {
-                    prevMap = -1;
-                    do
-                    {
-                        curMap += 1;
-                        if (curMap == maxmaps)
-                            curMap = 0;
-                    } while (maps[curMap].objData.NPCnum > 0x80); //sanity check the invalid maps out
-                    showMapDeets();
-                }
-            }
-            if (e.Button == MouseButtons.Right)
-            {
-                if (viewTiles)
-                {
-                    curTiles -= 1;
-                    if (curTiles < 0)
-                        curTiles = maxtiles - 1;
-                    toolStripStatusLabel3.Text = "TS: " + curTiles.ToString();
-                }
-                else
-                {
-                    prevMap = -1;
-                    do
-                    {
-                        curMap -= 1;
-                        if (curMap == -1)
-                            curMap = maxmaps - 1;
-                    } while (maps[curMap].objData.NPCnum > 0x80); //sanity check the invalid maps out
-                    showMapDeets();
-                }
-            }
-            if (e.Button == MouseButtons.Middle)
-            {
-                //popup to select new map
-                string destS = Prompt.ShowDialog("Enter destination map", "");
-                int destI = -1;
-                bool p = false;
-                if(destS.Length > 2)
-                    if(destS.Substring(0,2) == "0x")//hex
-                    {
-                        destI = Convert.ToInt32(destS, 16);
-                        p = true;
-                    }
-                if (!p)
-                {
-                    int temp;
-                    if(int.TryParse(destS, out temp))
-                        destI = temp;
-                }
 
-                if (destI != -1)
-                    if (maps[destI].header.pMapData != 0 && maps[destI].header.hBank != 1 && maps[destI].header.tsID < maxtiles)
-                    {
-                        curMap = destI;
-                        prevMap = -1;
-                    }
-
-            }
-            selx = -1;
-            sely = -1;
-            detailsLabel.Text = "";
-            if (viewTiles)
-                drawTileset(curTiles);
-            else
-            {
-                drawMap(curMap);
-                showMapDeets();
-            }
         }
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
@@ -819,14 +734,14 @@ namespace Elf_s_World
             {
                 //check the tile clicked on
                 detailsLabel.Text = selx.ToString() + " " + sely.ToString();
-                if(sely > 3 && selx < 20)
+                if (sely > 3 && selx < 20)
                 {
                     int sx = selx;
                     int sy = sely - 4;
                     int bx = sx / 2;//tx = selx % 2
                     int by = sy / 2;//ty = sely % 2?
                     detailsLabel.Text += "\n" + bx.ToString() + " " + by.ToString();
-                    detailsLabel.Text += "\nColl ID: " + tilesets[curTiles].header.collision[(by*10 + bx) * 4 + (sely % 2) * 2 + selx % 2].ToString();
+                    detailsLabel.Text += "\nColl ID: " + tilesets[curTiles].header.collision[(by * 10 + bx) * 4 + (sely % 2) * 2 + selx % 2].ToString();
                 }
             }
             else
@@ -859,7 +774,7 @@ namespace Elf_s_World
                             detailsLabel.Text = maps[curMap].objData.NPCs[i].mov1.ToString();
                             detailsLabel.Text += "\n" + maps[curMap].objData.NPCs[i].u2.ToString();
                             //detailsLabel.Text += "\nBank: " + maps[curMap].header.hBank.ToString();
-                            detailsLabel.Text += "\nAbsolute pointer to NPC:\n" + ((maps[curMap].header.hBank - 1)*0x4000 + maps[curMap].header.pMapObject + maps[curMap].objData.warpNum*7 + maps[curMap].objData.signNum*4 + i*13 + 5).ToString();
+                            detailsLabel.Text += "\nAbsolute pointer to NPC:\n" + ((maps[curMap].header.hBank - 1) * 0x4000 + maps[curMap].header.pMapObject + maps[curMap].objData.warpNum * 7 + maps[curMap].objData.signNum * 4 + i * 13 + 5).ToString();
                         }
                         break;
                     }
@@ -971,7 +886,7 @@ namespace Elf_s_World
             BinaryWriter bW = new BinaryWriter(File.Create("dump.txt"));
             for (int i = 0; i < maxmaps; i++)
             {
-                
+
                 bW.Write("Map " + i.ToString() + " (" + maps[curMap].header.group.ToString() + "-" + (curMap - groupStarts[maps[curMap].header.group - 1] + 1).ToString() + ")\n");
                 bW.Write("W: " + maps[i].header.width.ToString() + "\n");
                 bW.Write("H: " + maps[i].header.height.ToString() + "\n");
@@ -1026,6 +941,42 @@ namespace Elf_s_World
             detailsLabel.Text += "\nNumber of NPCs: " + maps[curMap].objData.NPCnum.ToString();
 
             detailsLabel.Text += "\nMap Type?: " + maps[curMap].header.maptype.ToString();
+        }
+
+        private void NumericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+            string s = numericUpDown1.Value.ToString();
+
+            int.TryParse(numericUpDown1.Value.ToString(), out int value);
+
+            if (value != 13)
+            {
+                curTiles = value;
+                if (viewTiles)
+                    curTiles %= maxtiles;
+                else
+                {
+                    prevMap = -1;
+                    do
+                    {
+                        curMap = value;
+                        if (curMap == maxmaps)
+                            curMap = 0;
+                    } while (maps[curMap].objData.NPCnum > 0x80); //sanity check the invalid maps out
+                    showMapDeets();
+                }
+
+                selx = -1;
+                sely = -1;
+                detailsLabel.Text = "";
+                if (viewTiles)
+                    drawTileset(curTiles);
+                else
+                {
+                    drawMap(curMap);
+                    showMapDeets();
+                }
+            }
         }
     }
 }
