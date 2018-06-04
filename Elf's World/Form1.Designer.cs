@@ -35,25 +35,26 @@
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.entityMarkersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tilesetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.timeOfDayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.morningToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.middayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mapOnlyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dataDumpToTxtToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.detailsPanel = new System.Windows.Forms.Panel();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.detailsDivider = new System.Windows.Forms.Label();
             this.detailsLabel = new System.Windows.Forms.Label();
-            this.timeOfDayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.morningToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.middayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.nightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.detailsPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -106,16 +107,49 @@
             // 
             this.entityMarkersToolStripMenuItem.CheckOnClick = true;
             this.entityMarkersToolStripMenuItem.Name = "entityMarkersToolStripMenuItem";
-            this.entityMarkersToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.entityMarkersToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.entityMarkersToolStripMenuItem.Text = "Entity Markers";
             this.entityMarkersToolStripMenuItem.Click += new System.EventHandler(this.entityMarkersToolStripMenuItem_Click);
             // 
             // tilesetToolStripMenuItem
             // 
             this.tilesetToolStripMenuItem.Name = "tilesetToolStripMenuItem";
-            this.tilesetToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.tilesetToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.tilesetToolStripMenuItem.Text = "Tileset";
             this.tilesetToolStripMenuItem.Click += new System.EventHandler(this.tilesetToolStripMenuItem_Click);
+            // 
+            // timeOfDayToolStripMenuItem
+            // 
+            this.timeOfDayToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.morningToolStripMenuItem,
+            this.middayToolStripMenuItem,
+            this.nightToolStripMenuItem});
+            this.timeOfDayToolStripMenuItem.Name = "timeOfDayToolStripMenuItem";
+            this.timeOfDayToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.timeOfDayToolStripMenuItem.Text = "Time Of Day";
+            // 
+            // morningToolStripMenuItem
+            // 
+            this.morningToolStripMenuItem.Name = "morningToolStripMenuItem";
+            this.morningToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
+            this.morningToolStripMenuItem.Text = "Morning";
+            this.morningToolStripMenuItem.Click += new System.EventHandler(this.morningToolStripMenuItem_Click);
+            // 
+            // middayToolStripMenuItem
+            // 
+            this.middayToolStripMenuItem.Checked = true;
+            this.middayToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.middayToolStripMenuItem.Name = "middayToolStripMenuItem";
+            this.middayToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
+            this.middayToolStripMenuItem.Text = "Midday";
+            this.middayToolStripMenuItem.Click += new System.EventHandler(this.middayToolStripMenuItem_Click);
+            // 
+            // nightToolStripMenuItem
+            // 
+            this.nightToolStripMenuItem.Name = "nightToolStripMenuItem";
+            this.nightToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
+            this.nightToolStripMenuItem.Text = "Night";
+            this.nightToolStripMenuItem.Click += new System.EventHandler(this.nightToolStripMenuItem_Click);
             // 
             // exportToolStripMenuItem
             // 
@@ -146,8 +180,7 @@
             this.statusStrip1.AllowMerge = false;
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
-            this.toolStripStatusLabel2,
-            this.toolStripStatusLabel3});
+            this.toolStripStatusLabel2});
             this.statusStrip1.Location = new System.Drawing.Point(0, 249);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(284, 22);
@@ -166,15 +199,8 @@
             this.toolStripStatusLabel2.AutoSize = false;
             this.toolStripStatusLabel2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(33, 17);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(120, 17);
             this.toolStripStatusLabel2.Spring = true;
-            // 
-            // toolStripStatusLabel3
-            // 
-            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            this.toolStripStatusLabel3.Size = new System.Drawing.Size(118, 17);
-            this.toolStripStatusLabel3.Text = "toolStripStatusLabel3";
-            this.toolStripStatusLabel3.MouseDown += new System.Windows.Forms.MouseEventHandler(this.toolStripStatusLabel3_MouseDown);
             // 
             // pictureBox1
             // 
@@ -189,6 +215,7 @@
             // 
             // detailsPanel
             // 
+            this.detailsPanel.Controls.Add(this.numericUpDown1);
             this.detailsPanel.Controls.Add(this.detailsDivider);
             this.detailsPanel.Controls.Add(this.detailsLabel);
             this.detailsPanel.Dock = System.Windows.Forms.DockStyle.Right;
@@ -197,6 +224,19 @@
             this.detailsPanel.Size = new System.Drawing.Size(123, 225);
             this.detailsPanel.TabIndex = 3;
             this.detailsPanel.Visible = false;
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Location = new System.Drawing.Point(8, 3);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            227,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(66, 20);
+            this.numericUpDown1.TabIndex = 2;
+            this.numericUpDown1.ValueChanged += new System.EventHandler(this.NumericUpDown1_ValueChanged);
             // 
             // detailsDivider
             // 
@@ -210,45 +250,12 @@
             // detailsLabel
             // 
             this.detailsLabel.AutoSize = true;
-            this.detailsLabel.Location = new System.Drawing.Point(4, 4);
+            this.detailsLabel.Location = new System.Drawing.Point(3, 26);
             this.detailsLabel.Name = "detailsLabel";
             this.detailsLabel.Size = new System.Drawing.Size(40, 13);
             this.detailsLabel.TabIndex = 0;
             this.detailsLabel.Text = "dummy";
             this.detailsLabel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.detailsLabel_MouseClick);
-            // 
-            // timeOfDayToolStripMenuItem
-            // 
-            this.timeOfDayToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.morningToolStripMenuItem,
-            this.middayToolStripMenuItem,
-            this.nightToolStripMenuItem});
-            this.timeOfDayToolStripMenuItem.Name = "timeOfDayToolStripMenuItem";
-            this.timeOfDayToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.timeOfDayToolStripMenuItem.Text = "Time Of Day";
-            // 
-            // morningToolStripMenuItem
-            // 
-            this.morningToolStripMenuItem.Name = "morningToolStripMenuItem";
-            this.morningToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.morningToolStripMenuItem.Text = "Morning";
-            this.morningToolStripMenuItem.Click += new System.EventHandler(this.morningToolStripMenuItem_Click);
-            // 
-            // middayToolStripMenuItem
-            // 
-            this.middayToolStripMenuItem.Checked = true;
-            this.middayToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.middayToolStripMenuItem.Name = "middayToolStripMenuItem";
-            this.middayToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.middayToolStripMenuItem.Text = "Midday";
-            this.middayToolStripMenuItem.Click += new System.EventHandler(this.middayToolStripMenuItem_Click);
-            // 
-            // nightToolStripMenuItem
-            // 
-            this.nightToolStripMenuItem.Name = "nightToolStripMenuItem";
-            this.nightToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.nightToolStripMenuItem.Text = "Night";
-            this.nightToolStripMenuItem.Click += new System.EventHandler(this.nightToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -269,6 +276,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.detailsPanel.ResumeLayout(false);
             this.detailsPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -286,7 +294,6 @@
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem entityMarkersToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
         private System.Windows.Forms.Panel detailsPanel;
         private System.Windows.Forms.Label detailsLabel;
         private System.Windows.Forms.Label detailsDivider;
@@ -298,6 +305,7 @@
         private System.Windows.Forms.ToolStripMenuItem morningToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem middayToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem nightToolStripMenuItem;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
     }
 }
 
