@@ -46,6 +46,10 @@
             this.detailsPanel = new System.Windows.Forms.Panel();
             this.detailsDivider = new System.Windows.Forms.Label();
             this.detailsLabel = new System.Windows.Forms.Label();
+            this.timeOfDayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.morningToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.middayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -76,14 +80,14 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenROM);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -91,7 +95,8 @@
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.entityMarkersToolStripMenuItem,
-            this.tilesetToolStripMenuItem});
+            this.tilesetToolStripMenuItem,
+            this.timeOfDayToolStripMenuItem});
             this.viewToolStripMenuItem.Enabled = false;
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
@@ -101,14 +106,14 @@
             // 
             this.entityMarkersToolStripMenuItem.CheckOnClick = true;
             this.entityMarkersToolStripMenuItem.Name = "entityMarkersToolStripMenuItem";
-            this.entityMarkersToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.entityMarkersToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.entityMarkersToolStripMenuItem.Text = "Entity Markers";
             this.entityMarkersToolStripMenuItem.Click += new System.EventHandler(this.entityMarkersToolStripMenuItem_Click);
             // 
             // tilesetToolStripMenuItem
             // 
             this.tilesetToolStripMenuItem.Name = "tilesetToolStripMenuItem";
-            this.tilesetToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.tilesetToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.tilesetToolStripMenuItem.Text = "Tileset";
             this.tilesetToolStripMenuItem.Click += new System.EventHandler(this.tilesetToolStripMenuItem_Click);
             // 
@@ -212,6 +217,39 @@
             this.detailsLabel.Text = "dummy";
             this.detailsLabel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.detailsLabel_MouseClick);
             // 
+            // timeOfDayToolStripMenuItem
+            // 
+            this.timeOfDayToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.morningToolStripMenuItem,
+            this.middayToolStripMenuItem,
+            this.nightToolStripMenuItem});
+            this.timeOfDayToolStripMenuItem.Name = "timeOfDayToolStripMenuItem";
+            this.timeOfDayToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.timeOfDayToolStripMenuItem.Text = "Time Of Day";
+            // 
+            // morningToolStripMenuItem
+            // 
+            this.morningToolStripMenuItem.Name = "morningToolStripMenuItem";
+            this.morningToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.morningToolStripMenuItem.Text = "Morning";
+            this.morningToolStripMenuItem.Click += new System.EventHandler(this.morningToolStripMenuItem_Click);
+            // 
+            // middayToolStripMenuItem
+            // 
+            this.middayToolStripMenuItem.Checked = true;
+            this.middayToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.middayToolStripMenuItem.Name = "middayToolStripMenuItem";
+            this.middayToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.middayToolStripMenuItem.Text = "Midday";
+            this.middayToolStripMenuItem.Click += new System.EventHandler(this.middayToolStripMenuItem_Click);
+            // 
+            // nightToolStripMenuItem
+            // 
+            this.nightToolStripMenuItem.Name = "nightToolStripMenuItem";
+            this.nightToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.nightToolStripMenuItem.Text = "Night";
+            this.nightToolStripMenuItem.Click += new System.EventHandler(this.nightToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -256,6 +294,10 @@
         private System.Windows.Forms.ToolStripMenuItem mapOnlyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tilesetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dataDumpToTxtToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem timeOfDayToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem morningToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem middayToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem nightToolStripMenuItem;
     }
 }
 

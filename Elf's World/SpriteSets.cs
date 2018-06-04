@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Elf_s_World
 {
-    static class SpriteSetsOW
+    static class SpriteSets
     {
         public static List<Set> sets = new List<Set>();
         public static List<SpriteData> spritedatas = new List<SpriteData>();

@@ -31,8 +31,8 @@ namespace Elf_s_World
             }
         }
 
-        //public PaletteList.Pal pal;
-        public int pal;
+        public PaletteList.Pal pal;
+        //public int pal;
 
         public Header header;
         public List<Bitmap> tiles = new List<Bitmap>();
@@ -49,6 +49,8 @@ namespace Elf_s_World
 
         public void buildTiles()
         {
+            if (pal.colors == null)
+                pal = PaletteList.pals[0];
             for (int i = 0; i < tiledata.Count() / 0x10; i++)//0x10 per tile
             {
                 //for each tile
@@ -63,7 +65,7 @@ namespace Elf_s_World
                         //for each pixel
                         int c = (tiledata[tile + j * 2] >> k) & 1;
                         c += ((tiledata[tile + j * 2 + 1] >> k) & 1) << 1;
-                        g.FillRectangle(new SolidBrush(PaletteList.pals[pal].colors[c]), 7 - k, j, 1, 1);
+                        g.FillRectangle(new SolidBrush(pal.colors[c]), 7 - k, j, 1, 1);
                     }
                 }
             }

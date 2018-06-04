@@ -34,6 +34,7 @@ namespace Elf_s_World
         int curMap = 0;
         int prevMap = -1;
         bool viewEnts = false;
+        int timeOfDay = 1;
 
         int curTiles = 0;
 
@@ -63,7 +64,7 @@ namespace Elf_s_World
             file = dial.FileName;
 
             //reset spritesets
-            SpriteSetsOW.init();
+            SpriteSets.init();
 
             BinaryReader bR = new BinaryReader(File.Open(file, FileMode.Open, FileAccess.Read));
 
@@ -225,13 +226,15 @@ namespace Elf_s_World
                     int p = 0;
                     if (maps[i].header.maptype%2 == 1)
                         p = mapTs[maps[i].header.group - 1];//14 - group
+                    if (maps[i].header.maptype == 4)
+                        p = 12;
                     /*if (maps[i].header.tsID == 0x11)//cave
                         p = 0x23;
                     if (maps[i].header.tsID == 0x0F)//tower/agitha
                         p = 0x19;
                     if (i < 11)
                        p = i+1;*/
-                    maps[i].loadMap(bR.ReadBytes(maps[i].header.width * maps[i].header.height), tilesets[maps[i].header.tsID], p);
+                    maps[i].loadMap(bR.ReadBytes(maps[i].header.width * maps[i].header.height), tilesets[maps[i].header.tsID], p, timeOfDay);
 
                     bR.BaseStream.Seek((maps[i].header.hBank - 1) * 0x4000 + maps[i].header.pMapObject, SeekOrigin.Begin);//seek to map's object data
                     maps[i].objData.make();
@@ -478,19 +481,19 @@ namespace Elf_s_World
             //load the sprite headers
             for(int i = 0; i < totalsprites; i++)//72 sprites in most - 82 in yellow/pikachu
             {
-                SpriteSetsOW.SpriteData s = new SpriteSetsOW.SpriteData();
+                SpriteSets.SpriteData s = new SpriteSets.SpriteData();
                 s.dataP = bR.ReadUInt16();
                 s.size = bR.ReadByte();
                 s.bank = bR.ReadByte();
-                SpriteSetsOW.spritedatas.Add(s);
+                SpriteSets.spritedatas.Add(s);
             }
             //load each sprite's data[]
             for(int i = 0; i < totalsprites; i++)
             {
-                bR.BaseStream.Seek((SpriteSetsOW.spritedatas[i].bank - 1) * 0x4000 + SpriteSetsOW.spritedatas[i].dataP, SeekOrigin.Begin);
-                SpriteSetsOW.SpriteData s = SpriteSetsOW.spritedatas[i];
-                s.data = bR.ReadBytes(SpriteSetsOW.spritedatas[i].size);
-                SpriteSetsOW.spritedatas[i] = s;
+                bR.BaseStream.Seek((SpriteSets.spritedatas[i].bank - 1) * 0x4000 + SpriteSets.spritedatas[i].dataP, SeekOrigin.Begin);
+                SpriteSets.SpriteData s = SpriteSets.spritedatas[i];
+                s.data = bR.ReadBytes(SpriteSets.spritedatas[i].size);
+                SpriteSets.spritedatas[i] = s;
             }
             /*
             //load up the hidden items
@@ -650,6 +653,13 @@ namespace Elf_s_World
             toolStripStatusLabel3.Text = "Map: " + mid.ToString();
         }
 
+        public void redrawMap()
+        {
+            maps[curMap].initPal(timeOfDay);
+            maps[curMap].img = null;
+            drawMap(curMap);
+        }
+
         struct HiddenItem
         {
             public byte map;
@@ -802,7 +812,7 @@ namespace Elf_s_World
                 drawTileset(curTiles);
             else
             {
-                drawMap(curMap);
+                redrawMap();
                 showMapDeets();
             }
         }
@@ -923,7 +933,7 @@ namespace Elf_s_World
                     showMapDeets();
                 }
 
-                drawMap(curMap);
+                redrawMap();
             }
         }
 
@@ -943,7 +953,10 @@ namespace Elf_s_World
         {
             viewTiles = !viewTiles;
             tilesetToolStripMenuItem.Checked = viewTiles;
-            drawTileset(curTiles);
+            if (viewTiles)
+                drawTileset(curTiles);
+            else
+                redrawMap();
         }
 
         private void detailsLabel_MouseClick(object sender, MouseEventArgs e)
@@ -955,7 +968,7 @@ namespace Elf_s_World
                 {
                     //detailsLabel.Text += y + "\n";
                     curMap = groupStarts[maps[curMap].header.connections[y].connGroup - 1] + maps[curMap].header.connections[y].connID - 1;
-                    drawMap(curMap);
+                    redrawMap();
                     resetPanel();
                     showMapDeets();
                 }
@@ -1028,6 +1041,34 @@ namespace Elf_s_World
             detailsLabel.Text += "\nNumber of NPCs: " + maps[curMap].objData.NPCnum.ToString();
 
             detailsLabel.Text += "\nMap Type?: " + maps[curMap].header.maptype.ToString();
+        }
+
+        void setTimeChecked(int t)
+        {
+            morningToolStripMenuItem.Checked = (t == 0);
+            middayToolStripMenuItem.Checked = (t == 1);
+            nightToolStripMenuItem.Checked = (t == 2);
+        }
+
+        private void morningToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            timeOfDay = 0;
+            redrawMap();
+            setTimeChecked(0);
+        }
+
+        private void middayToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            timeOfDay = 1;
+            redrawMap();
+            setTimeChecked(1);
+        }
+
+        private void nightToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            timeOfDay = 2;
+            redrawMap();
+            setTimeChecked(2);
         }
     }
 }

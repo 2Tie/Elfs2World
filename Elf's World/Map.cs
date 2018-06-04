@@ -28,6 +28,10 @@ namespace Elf_s_World
             public ushort pMapObject;
             public int group;
 
+            public int pal;
+            public int usepal;
+            public int timeOfDay;
+
             
             public void make1(byte b, byte t, byte u1, ushort p, byte l, byte m, byte u2)
             {
@@ -171,15 +175,33 @@ namespace Elf_s_World
         //public int pal = 0;
         public int spriteSet = -1;
 
-        public void loadMap(byte[] data, Tileset t, int p)
+        public void loadMap(byte[] data, Tileset til, int p, int tim)
         {
             mapdata = data;
             tileset = new Tileset();
-            tileset.header = t.header;
-            tileset.tiledata = t.tiledata;
-            tileset.blockdata = t.blockdata;
-            tileset.pal = p;
-            //tileset.pal.build();
+            tileset.header = til.header;
+            tileset.tiledata = til.tiledata;
+            tileset.blockdata = til.blockdata;
+            header.pal = p;
+            initPal(tim);
+        }
+
+        public void initPal(int tim)
+        {
+            header.timeOfDay = tim;
+            if (header.timeOfDay == 2)
+                header.usepal = 13;
+            else
+                header.usepal = header.pal;
+            tileset.pal = new PaletteList.Pal();
+            tileset.pal.make();
+            for (int i = 0; i < 4; i++)
+                tileset.pal.colors[i] = PaletteList.pals[header.usepal].colors[i];
+
+            if (header.timeOfDay == 2)
+                tileset.pal.colors[0] = Color.FromArgb(tileset.pal.colors[1].ToArgb());
+            if (header.timeOfDay != 1)
+                tileset.pal.colors[1] = Color.FromArgb(tileset.pal.colors[2].ToArgb());
         }
 
         public void buildMap()
@@ -220,52 +242,52 @@ namespace Elf_s_World
             {
                 //if we're not indoors, aka map < 25
                 //build the set with our pallete
-                SpriteSetsOW.sets[spriteSet-1].build(tileset.pal);
+                SpriteSets.sets[spriteSet-1].build(header.pal);
                 //draw them
                 for(int i = 0; i < objData.NPCnum; i++)
                 {
-                    int cel = Array.IndexOf(SpriteSetsOW.sets[spriteSet-1].indexes, objData.NPCs[i].pic);
+                    int cel = Array.IndexOf(SpriteSets.sets[spriteSet-1].indexes, objData.NPCs[i].pic);
                     Bitmap img;
                     int dir = objData.NPCs[i].u2 & 0x3;
                     if (objData.NPCs[i].u2 == 0xff)
                         dir = 0;
                     if (dir < 3)
-                        img = new Bitmap(SpriteSetsOW.sets[spriteSet - 1].sprites[cel].frames[dir]);
+                        img = new Bitmap(SpriteSets.sets[spriteSet - 1].sprites[cel].frames[dir]);
                     else
                     {
-                        img = new Bitmap(SpriteSetsOW.sets[spriteSet - 1].sprites[cel].frames[2]);
+                        img = new Bitmap(SpriteSets.sets[spriteSet - 1].sprites[cel].frames[2]);
                         img.RotateFlip(RotateFlipType.RotateNoneFlipX);
                     }
                     g.DrawImageUnscaled(img, (objData.NPCs[i].xpos - 4) * 16, (objData.NPCs[i].ypos - 4) * 16);
                 }
             } else if (spriteSet == -1)//interior, use scratch
             {
-                SpriteSetsOW.interiorSet.make();
+                SpriteSets.interiorSet.make();
                 //populate the Set
                 int skip = 0;
                 for (int i = 0; i < objData.NPCs.Count(); i++)
                 {
-                    if (SpriteSetsOW.interiorSet.indexes.Contains(objData.NPCs[i].pic) == false && i - skip < 11)//if it's not already in, add it
+                    if (SpriteSets.interiorSet.indexes.Contains(objData.NPCs[i].pic) == false && i - skip < 11)//if it's not already in, add it
                     {
-                        SpriteSetsOW.interiorSet.indexes[i - skip] = objData.NPCs[i].pic;
+                        SpriteSets.interiorSet.indexes[i - skip] = objData.NPCs[i].pic;
                     }
                     else skip += 1;
                 }
                 //build the Set
-                SpriteSetsOW.interiorSet.build(tileset.pal);
+                 SpriteSets.interiorSet.build(header.pal);
                 //draw them
                 for (int i = 0; i < objData.NPCnum; i++)
                 {
-                    int cel = Array.IndexOf(SpriteSetsOW.interiorSet.indexes, objData.NPCs[i].pic);
+                    int cel = Array.IndexOf(SpriteSets.interiorSet.indexes, objData.NPCs[i].pic);
                     Bitmap img;
                     int dir = (objData.NPCs[i].mov1-1) & 0x3;
                     if (objData.NPCs[i].u2 == 0xff)
                         dir = 0;
                     if (dir < 3)
-                        img = new Bitmap(SpriteSetsOW.interiorSet.sprites[cel].frames[dir]);
+                        img = new Bitmap(SpriteSets.interiorSet.sprites[cel].frames[dir]);
                     else
                     {
-                        img = new Bitmap(SpriteSetsOW.interiorSet.sprites[cel].frames[2]);
+                        img = new Bitmap(SpriteSets.interiorSet.sprites[cel].frames[2]);
                         img.RotateFlip(RotateFlipType.RotateNoneFlipX);
                     }
                     g.DrawImageUnscaled(img, (objData.NPCs[i].xpos - 4) * 16, (objData.NPCs[i].ypos - 4) * 16);
@@ -275,38 +297,38 @@ namespace Elf_s_World
             {
                 int sprset = spriteSet - 0xF1;
                 //build both sets
-                SpriteSetsOW.sets[SpriteSetsOW.splitSets[sprset].lset - 1].build(tileset.pal);
-                SpriteSetsOW.sets[SpriteSetsOW.splitSets[sprset].rset - 1].build(tileset.pal);
+                SpriteSets.sets[SpriteSets.splitSets[sprset].lset - 1].build(header.pal);
+                SpriteSets.sets[SpriteSets.splitSets[sprset].rset - 1].build(header.pal);
                 //draw each npc
                 for (int i = 0; i < objData.NPCnum; i++)
                 {
                     //determine which set the npc belongs to
                     int set = 0;
-                    if (SpriteSetsOW.splitSets[sprset].dir == 1)//left & right
+                    if (SpriteSets.splitSets[sprset].dir == 1)//left & right
                     {
-                        if (objData.NPCs[i].xpos < SpriteSetsOW.splitSets[sprset].divider)
-                            set = SpriteSetsOW.splitSets[sprset].lset - 1;
+                        if (objData.NPCs[i].xpos < SpriteSets.splitSets[sprset].divider)
+                            set = SpriteSets.splitSets[sprset].lset - 1;
                         else
-                            set = SpriteSetsOW.splitSets[sprset].rset - 1;
+                            set = SpriteSets.splitSets[sprset].rset - 1;
                     } else //up & down
                     {
-                        if (objData.NPCs[i].ypos < SpriteSetsOW.splitSets[sprset].divider)
-                            set = SpriteSetsOW.splitSets[sprset].lset - 1;
+                        if (objData.NPCs[i].ypos < SpriteSets.splitSets[sprset].divider)
+                            set = SpriteSets.splitSets[sprset].lset - 1;
                         else
-                            set = SpriteSetsOW.splitSets[sprset].rset - 1;
+                            set = SpriteSets.splitSets[sprset].rset - 1;
                     }
 
                     //draw the npc
-                    int cel = Array.IndexOf(SpriteSetsOW.sets[set].indexes, objData.NPCs[i].pic);
+                    int cel = Array.IndexOf(SpriteSets.sets[set].indexes, objData.NPCs[i].pic);
                     Bitmap img;
                     int dir = objData.NPCs[i].mov2 & 0x3;
                     if (objData.NPCs[i].mov2 == 0xff)
                         dir = 0;
                     if (dir < 3)
-                        img = new Bitmap(SpriteSetsOW.sets[set].sprites[cel].frames[dir]);
+                        img = new Bitmap(SpriteSets.sets[set].sprites[cel].frames[dir]);
                     else
                     {
-                        img = new Bitmap(SpriteSetsOW.sets[set].sprites[cel].frames[2]);
+                        img = new Bitmap(SpriteSets.sets[set].sprites[cel].frames[2]);
                         img.RotateFlip(RotateFlipType.RotateNoneFlipX);
                     }
                     g.DrawImageUnscaled(img, (objData.NPCs[i].xpos - 4) * 16, (objData.NPCs[i].ypos - 4) * 16);
