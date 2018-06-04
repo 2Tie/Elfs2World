@@ -228,6 +228,10 @@ namespace Elf_s_World
                         p = mapTs[maps[i].header.group - 1];//14 - group
                     if (maps[i].header.maptype == 4)
                         p = 12;
+                    if (maps[i].header.maptype == 5)
+                        p = 4;
+                    if (maps[i].header.maptype == 6)
+                        p = 3;
                     /*if (maps[i].header.tsID == 0x11)//cave
                         p = 0x23;
                     if (maps[i].header.tsID == 0x0F)//tower/agitha

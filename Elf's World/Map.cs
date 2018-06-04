@@ -189,7 +189,7 @@ namespace Elf_s_World
         public void initPal(int tim)
         {
             header.timeOfDay = tim;
-            if (header.timeOfDay == 2)
+            if (header.timeOfDay == 2 && header.maptype > 1 && header.maptype < 5)
                 header.usepal = 13;
             else
                 header.usepal = header.pal;
