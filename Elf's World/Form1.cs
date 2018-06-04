@@ -1053,22 +1053,25 @@ namespace Elf_s_World
         private void morningToolStripMenuItem_Click(object sender, EventArgs e)
         {
             timeOfDay = 0;
-            redrawMap();
             setTimeChecked(0);
+            if(!viewTiles)
+                redrawMap();
         }
 
         private void middayToolStripMenuItem_Click(object sender, EventArgs e)
         {
             timeOfDay = 1;
-            redrawMap();
             setTimeChecked(1);
+            if (!viewTiles)
+                redrawMap();
         }
 
         private void nightToolStripMenuItem_Click(object sender, EventArgs e)
         {
             timeOfDay = 2;
-            redrawMap();
             setTimeChecked(2);
+            if (!viewTiles)
+                redrawMap();
         }
     }
 }
